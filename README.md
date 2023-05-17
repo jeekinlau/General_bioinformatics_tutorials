@@ -56,6 +56,9 @@ fastq-dump SRR7060177 --gzip
 
 Now you dont want to have to type all this in so we can utilize many cores and many instance of the HPRC to do this relatively quickly. However we cannot do this from the SSH login window or you will get a nasty email and you could be put in HPRC timeout for a week or two. So we need to create what is called a slurm job. All a slurm Job is file that asks the job scheduler for certain resources you want (i.e. cores, ram, runtime, etc.). Otherwise the rest of the slurm file is just a bash script. The specs you can ask for are located here https://hprc.tamu.edu/wiki/Grace:Batch
 
+
+Below we are going to download the dataset from the paper https://acsess.onlinelibrary.wiley.com/doi/full/10.3835/plantgenome2018.02.0010
+
 ```
 #!/bin/bash
 #SBATCH --export=NONE
