@@ -75,3 +75,4 @@ parallel -j 45 fastq-dump {} --gzip ::: SRR7060177	SRR7060178	SRR7060179	SRR7060
 
 ```
 
+Copy this text into a file and name it `download.SLURM`
