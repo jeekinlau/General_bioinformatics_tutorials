@@ -54,7 +54,7 @@ First we need to download all the files. Now the tool to do this is called fastq
 fastq-dump SRR7060177 --gzip
 ```
 
-Now you dont want to have to type all this in so we can utilize many cores and many instance of the HPRC to do this relatively quickly. However we cannot do this from the SSH login window or you will get a nasty email and you could be put in HPRC timeout for a week or two. So we need to create what is called a slurm job. All a slurm Job is file that asks the job scheduler for certain resources you want (i.e. cores, ram, runtime, etc.). Otherwise the rest of the slurm file is just a bash script.
+Now you dont want to have to type all this in so we can utilize many cores and many instance of the HPRC to do this relatively quickly. However we cannot do this from the SSH login window or you will get a nasty email and you could be put in HPRC timeout for a week or two. So we need to create what is called a slurm job. All a slurm Job is file that asks the job scheduler for certain resources you want (i.e. cores, ram, runtime, etc.). Otherwise the rest of the slurm file is just a bash script. The specs you can ask for are located here https://hprc.tamu.edu/wiki/Grace:Batch
 
 ```
 #!/bin/bash
@@ -75,4 +75,4 @@ parallel -j 45 fastq-dump {} --gzip ::: SRR7060177	SRR7060178	SRR7060179	SRR7060
 
 ```
 
-Copy this text into a file and name it `download.SLURM`
+Copy this text into a file and name it `download.SLURM` then execute by going to the folder where the slurm file is and `sbatch download.SLURM`
