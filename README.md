@@ -1,7 +1,11 @@
 # General_bioinformatics_tutorials
 The general idea of this tutorial is to get you familar with general bioinformatics. Much of the examples are pertinent to the Texas A&M University (TAMU) High Performance Research Compututing (HPRC) resources.
 
-## Basics
+## Table of contents
+1. [Introduction](#Basics)
+2. [Downloading Data](#downloading-data)
+
+## Basics <a name="Basics"></a>
 ### Logging in 
 There are a few easy ways to access the TAMU HPRC.    
 **Important:You must be physically on campus or logged into TAMU VPN  to access the clusters**
@@ -48,7 +52,7 @@ ml spider R
 
 module spider R/4.2.0
 ```
-
+## Downloading data <a name="downloading-data"></a>
 First we need to download all the files. Now the tool to do this is called fastq-dump which is part of the sra-tools from ncbi. What this does is downloads the accession numbers that you tell it to from NCBI. This code below will download SRR7060177 then compress the fasta file to .gz format.
 ```
 fastq-dump SRR7060177 --gzip
