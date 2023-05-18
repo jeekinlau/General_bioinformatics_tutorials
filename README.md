@@ -104,7 +104,7 @@ Then we will combine the all the fastqc reports using multiqc. Run the following
 ```
 multiqc .
 ```
-This will produce an [HTML file](https://jeekinlau.github.io/General_bioinformatics_tutorials/resources/multiqc_report.html) <--- click here to see
+This will produce an [HTML file](https://jeekinlau.github.io/General_bioinformatics_tutorials/resources/multiqc_report.html) <--- **click here to see**
 
 
 Let's try to run these steps in one sbatch job file
@@ -122,9 +122,9 @@ Let's try to run these steps in one sbatch job file
 mkdir $SCRATCH/tomatoes/fastqc
 mkdir $SCRATCH/tomatoes/multiqc
 
-ml load GCC/11.2.0  OpenMPI/4.1.1 FastQC/0.11.9-Java-11 MultiQC/1.12
+ml load GCC/11.2.0  OpenMPI/4.1.1 FastQC/0.11.9-Java-11 MultiQC/1.12 parallel/20210722
 
-cd $SCRATCH/tomaotes/rawdata
+cd $SCRATCH/tomatoes/rawdata
 parallel -j 45 fastqc {} -o $SCRATCH/tomatoes/fastqc ::: *fastq.gz
 
 cd $SCRATCH/tomatoes/multiqc 
