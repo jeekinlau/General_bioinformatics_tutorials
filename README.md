@@ -4,6 +4,7 @@ The general idea of this tutorial is to get you familar with general bioinformat
 ## Table of contents
 1. [Introduction](#Basics)
 2. [Downloading Data](#downloading-data)
+3. [Data QC](#quality-control)
 
 ## Basics <a name="Basics"></a>
 ### Logging in 
@@ -85,4 +86,15 @@ parallel -j 45 fastq-dump {} --gzip ::: SRR7060177	SRR7060178	SRR7060179  SRR706
 Copy this text into a file and name it `download.SLURM` then execute by going to the folder where the slurm file is and `sbatch download.SLURM`
 
 
-THIS FAILED because the compute nodes are not connected to the internet. IN the module load section we will add WebProxy and it should work. also comment out the mkdir of the two
+THIS FAILED because the compute nodes are not connected to the internet. IN the module load section we will add WebProxy and it should work. Also comment out the two mkdir lines since the folders already exist.
+
+## Data QC <a name="quality-control"></a>
+Next we will use two software, fastcq and multqc to look at the quality of all the samples we just downloaded.
+
+If we are just doing one sample 
+
+```
+fastqc SRR7060177.fasta.gz
+```
+
+This will produce an [HTML file](../resources/SRR7060177_fastqc.html)
