@@ -97,4 +97,40 @@ If we are just doing one sample
 fastqc SRR7060177.fasta.gz
 ```
 
-This will produce an [HTML file](https://jeekinlau.github.io/General_bioinformatics_tutorials/resources/SRR7060177_fastqc.html)
+This will produce an [HTML file](https://jeekinlau.github.io/General_bioinformatics_tutorials/resources/SRR7060177_fastqc.html) <--- **click here to see**
+
+Then we will combine the all the fastqc reports using multiqc. Run the following line in the folder of the folder containing all the fastqc reports
+
+```
+multiqc .
+```
+This will produce an [HTML file](https://jeekinlau.github.io/General_bioinformatics_tutorials/resources/multiqc_report.html) <--- click here to see
+
+
+Let's try to run these steps in one sbatch job file
+
+```
+#!/bin/bash
+#SBATCH --export=NONE
+#SBATCH --job-name=fastq_QC
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=48
+#SBATCH --mem=350G
+#SBATCH --time=02:00:00
+#SBATCH --mail-type=ALL
+
+mkdir $SCRATCH/tomatoes/fastqc
+mkdir $SCRATCH/tomatoes/multiqc
+
+ml load GCC/11.2.0  OpenMPI/4.1.1 FastQC/0.11.9-Java-11 MultiQC/1.12
+
+cd $SCRATCH/tomaotes/rawdata
+parallel -j 45 fastqc {} -o $SCRATCH/tomatoes/fastqc ::: *fastq.gz
+
+cd $SCRATCH/tomatoes/multiqc 
+MultiQC $SCRATCH/tomatoes/fastqc
+
+```
+
+
+
