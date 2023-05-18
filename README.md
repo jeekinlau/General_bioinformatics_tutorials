@@ -97,4 +97,4 @@ If we are just doing one sample
 fastqc SRR7060177.fasta.gz
 ```
 
-This will produce an [HTML file](resources/SRR7060177_fastqc.html)
+This will produce an [HTML file](https://jeekinlau.github.io/General_bioinformatics_tutorials/resources/SRR7060177_fastqc.html)
