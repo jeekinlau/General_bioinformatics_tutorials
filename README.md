@@ -128,7 +128,7 @@ cd $SCRATCH/tomatoes/rawdata
 parallel -j 45 fastqc {} -o $SCRATCH/tomatoes/fastqc ::: *fastq.gz
 
 cd $SCRATCH/tomatoes/multiqc 
-MultiQC $SCRATCH/tomatoes/fastqc
+multiqc $SCRATCH/tomatoes/fastqc
 
 ```
 
