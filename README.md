@@ -128,10 +128,13 @@ cd $SCRATCH/tomatoes/rawdata
 parallel -j 45 fastqc {} -o $SCRATCH/tomatoes/fastqc ::: *fastq.gz
 
 cd $SCRATCH/tomatoes/multiqc 
-multiqc $SCRATCH/tomatoes/fastqc
+multiqc --interactive $SCRATCH/tomatoes/fastqc
 
 ```
 
 What we see in the multiqc run is that the second read is pretty trash. These were paired end reads and since the quality of R2 is pretty bad we will just cut these out so we dont have bad data going forward. There is some weird thing going on with the quality of the cut site but for now we won't worry about that. 
 
 ![multiqc quality](https://raw.githubusercontent.com/jeekinlau/General_bioinformatics_tutorials/main/resources/multiqc_quality.jpg)
+
+
+Because the quality drops off around 90 bp we will cut the reads here. we will use cutadapt. This program is also used to 
