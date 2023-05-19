@@ -134,4 +134,4 @@ multiqc $SCRATCH/tomatoes/fastqc
 
 What we see in the multiqc run is that the second read is pretty trash. These were paired end reads and since the quality of R2 is pretty bad we will just cut these out so we dont have bad data going forward. There is some weird thing going on with the quality of the cut site but for now we won't worry about that. 
 
-![multiqc wuality](../resources/multiqc_quality.jpg)
+![multiqc quality](https://raw.githubusercontent.com/jeekinlau/General_bioinformatics_tutorials/main/resources/multiqc_quality.jpg)
