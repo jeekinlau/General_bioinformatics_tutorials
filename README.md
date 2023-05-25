@@ -137,4 +137,24 @@ What we see in the multiqc run is that the second read is pretty trash. These we
 ![multiqc quality](https://raw.githubusercontent.com/jeekinlau/General_bioinformatics_tutorials/main/resources/multiqc_quality.jpg)
 
 
-Because the quality drops off around 90 bp we will cut the reads here. we will use cutadapt. This program is also used to 
+Because the quality drops off around 90 bp we will cut the reads here. we will use cutadapt. This program is also used to cut off adapters. 
+
+```
+#!/bin/bash
+#SBATCH --export=NONE
+#SBATCH --job-name=cutadapt
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=48
+#SBATCH --mem=350G
+#SBATCH --time=02:00:00
+#SBATCH --mail-type=ALL
+
+ml load GCC/11.2.0  parallel/20210722 cutadapt/3.5
+
+
+
+mkdir $SCRATCH/tomatoes/trimmed
+cd $SCRATCH/tomatoes/rawdata
+parallel -j 10 cutadapt --cores=4 -l 90 -o $SCRATCH/tomatoes/trimmed/{} {} ::: *fastq.gz
+
+```
