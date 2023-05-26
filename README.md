@@ -158,3 +158,5 @@ cd $SCRATCH/tomatoes/rawdata
 parallel -j 10 cutadapt --cores=4 -l 90 -o $SCRATCH/tomatoes/trimmed/{} {} ::: *fastq.gz
 
 ```
+
+After doing cutadapt this is homework assignment... write a SLURM job to do fastqc and multiqc on the new sequences that had the bad quality data trimmed off.
