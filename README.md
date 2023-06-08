@@ -5,6 +5,7 @@ The general idea of this tutorial is to get you familar with general bioinformat
 1. [Introduction](#Basics)
 2. [Downloading Data](#downloading-data)
 3. [Data QC](#quality-control)
+4. [Alignments](#alignments)
 
 ## Basics <a name="Basics"></a>
 ### Logging in 
@@ -160,3 +161,49 @@ parallel -j 10 cutadapt --cores=4 -l 90 -o $SCRATCH/tomatoes/trimmed/{} {} ::: *
 ```
 
 After doing cutadapt this is homework assignment... write a SLURM job to do fastqc and multiqc on the new sequences that had the bad quality data trimmed off.
+
+
+
+## Alignments <a name="alignments"></a>
+The next step is aligning the reads that we have cut to the reference genome.
+The general steps are:    
+1. Pick a reference genome and download it. https://solgenomics.net/ftp/tomato_genome/assembly/
+ - I would just pick the most recent one. The paper uses an older reference
+ - https://solgenomics.net/ftp/tomato_genome/assembly/build_4.00/ choose the file that ends with .fa
+2. We will then need to create reference files for the alignment programs need for alignment.
+
+
+```
+# create a folder in the tomatoes folder called genome
+mdir $SCRATCH/tomatoes/genome
+cd  $SCRATCH/tomatoes/genome
+# download the reference genome
+wget https://solgenomics.net/ftp/tomato_genome/assembly/build_4.00/S_lycopersicum_chromosomes.4.00.fa
+
+or 
+
+curl https://solgenomics.net/ftp/tomato_genome/assembly/build_4.00/S_lycopersicum_chromosomes.4.00.fa -o S_lycopersicum_chromosomes.4.00.fa
+```
+
+
+Then we need to index the files. we will learn how to do this not submitting a job but for quick interactive sessions you can do this. To exit the srun ctrl+d
+
+```
+# open an interactive sbatch called srun this allows you do do computing from the terminal by passthrough to your terminal. Good for fast jobs that you want to make sure worked.
+
+srun --nodes=1 --ntasks-per-node=4 --mem=2560M --time=01:00:00 --pty bash -i
+
+
+ml bwa-mem2/2.2.1-Linux64 picard/2.25.1-Java-11 GCC/12.2.0 SAMtools/1.17 WebProxy
+
+cd  $SCRATCH/tomatoes/genome
+
+# indexing genome
+bwa-mem2 index S_lycopersicum_chromosomes.4.00.fa
+java -jar $EBROOTPICARD/picard.jar CreateSequenceDictionary -R S_lycopersicum_chromosomes.4.00.fa
+samtools faidx S_lycopersicum_chromosomes.4.00.fa
+```
+
+
+
+
