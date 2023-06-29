@@ -191,7 +191,7 @@ Then we need to index the files. we will learn how to do this not submitting a j
 ```
 # open an interactive sbatch called srun this allows you do do computing from the terminal by passthrough to your terminal. Good for fast jobs that you want to make sure worked.
 
-srun --nodes=1 --ntasks-per-node=4 --mem=2560M --time=01:00:00 --pty bash -i
+srun --nodes=1 --ntasks-per-node=4 --mem=100G --time=01:00:00 --pty bash -i
 
 
 ml bwa-mem2/2.2.1-Linux64 picard/2.25.1-Java-11 GCC/12.2.0 SAMtools/1.17 WebProxy
@@ -204,6 +204,24 @@ java -jar $EBROOTPICARD/picard.jar CreateSequenceDictionary -R S_lycopersicum_ch
 samtools faidx S_lycopersicum_chromosomes.4.00.fa
 ```
 
+# BWA with actual alignment
 
+bwa or bowtie typically used for alignments. we will use bwa-mem2 which is a faster multicore version of bwa
+
+```
+srun --nodes=1 --ntasks-per-node=20 --mem=100G --time=02:00:00 --pty bash -i
+
+ml bwa-mem2/2.2.1-Linux64   GCC/12.2.0 SAMtools/1.17
+
+cd $SCRATCH/tomatoes/trimmed
+mkdir /done
+
+for file in *fastq.gz;
+do
+bwa-mem2 mem -t 10 $SCRATCH/genome/S_lycopersicum_chromosomes.4.00.fa $file | samtools view -b > $SCRATCH/tomatoes/bam/$file.bam
+mv $file $SCRATCH/tomatoes/trimmed/done
+done
+
+```
 
 
