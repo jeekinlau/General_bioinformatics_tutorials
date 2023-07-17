@@ -209,16 +209,24 @@ samtools faidx S_lycopersicum_chromosomes.4.00.fa
 bwa or bowtie typically used for alignments. we will use bwa-mem2 which is a faster multicore version of bwa
 
 ```
-srun --nodes=1 --ntasks-per-node=20 --mem=100G --time=02:00:00 --pty bash -i
+#!/bin/bash
+#SBATCH --export=NONE
+#SBATCH --job-name=cutadapt
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=10
+#SBATCH --mem=50G
+#SBATCH --time=02:00:00
+#SBATCH --mail-type=ALL
+
 
 ml bwa-mem2/2.2.1-Linux64   GCC/12.2.0 SAMtools/1.17
 
 cd $SCRATCH/tomatoes/trimmed
-mkdir /done
+#mkdir /done
 
 for file in *fastq.gz;
 do
-bwa-mem2 mem -t 10 $SCRATCH/genome/S_lycopersicum_chromosomes.4.00.fa $file | samtools view -b > $SCRATCH/tomatoes/bam/$file.bam
+bwa-mem2 mem -t 8 $SCRATCH/tomatoes/genome/S_lycopersicum_chromosomes.4.00.fa $file | samtools view -b > $SCRATCH/tomatoes/bam/$file.bam
 mv $file $SCRATCH/tomatoes/trimmed/done
 done
 
