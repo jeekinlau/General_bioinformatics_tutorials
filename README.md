@@ -6,6 +6,7 @@ The general idea of this tutorial is to get you familar with general bioinformat
 2. [Downloading Data](#downloading-data)
 3. [Data QC](#quality-control)
 4. [Alignments](#alignments)
+5. [STACKS](#STACKS)
 
 ## Basics <a name="Basics"></a>
 ### Logging in 
@@ -65,7 +66,7 @@ Now you dont want to have to type all this in so we can utilize many cores and m
 
 Below we are going to download the dataset from the paper https://acsess.onlinelibrary.wiley.com/doi/full/10.3835/plantgenome2018.02.0010
 
-```
+```bash
 #!/bin/bash
 #SBATCH --export=NONE
 #SBATCH --job-name=download_NCBI_sequences
@@ -110,7 +111,7 @@ This will produce an [HTML file](https://jeekinlau.github.io/General_bioinformat
 
 Let's try to run these steps in one sbatch job file
 
-```
+```bash
 #!/bin/bash
 #SBATCH --export=NONE
 #SBATCH --job-name=fastq_QC
@@ -140,7 +141,7 @@ What we see in the multiqc run is that the second read is pretty trash. These we
 
 Because the quality drops off around 90 bp we will cut the reads here. we will use cutadapt. This program is also used to cut off adapters. 
 
-```
+```bash
 #!/bin/bash
 #SBATCH --export=NONE
 #SBATCH --job-name=cutadapt
@@ -173,7 +174,7 @@ The general steps are:
 2. We will then need to create reference files for the alignment programs need for alignment.
 
 
-```
+```bash
 # create a folder in the tomatoes folder called genome
 mdir $SCRATCH/tomatoes/genome
 cd  $SCRATCH/tomatoes/genome
@@ -188,7 +189,7 @@ curl https://solgenomics.net/ftp/tomato_genome/assembly/build_4.00/S_lycopersicu
 
 Then we need to index the files. we will learn how to do this not submitting a job but for quick interactive sessions you can do this. To exit the srun ctrl+d
 
-```
+```bash
 # open an interactive sbatch called srun this allows you do do computing from the terminal by passthrough to your terminal. Good for fast jobs that you want to make sure worked.
 
 srun --nodes=1 --ntasks-per-node=4 --mem=100G --time=01:00:00 --pty bash -i
@@ -208,7 +209,7 @@ samtools faidx S_lycopersicum_chromosomes.4.00.fa
 
 bwa or bowtie typically used for alignments. we will use bwa-mem2 which is a faster multicore version of bwa
 
-```
+```bash
 #!/bin/bash
 #SBATCH --export=NONE
 #SBATCH --job-name=cutadapt
@@ -234,7 +235,7 @@ done
 
 After the reads are aligned, we need to sort the reads in the bam files. This sbatch below is for grace hprc cluster. For other clusters use ml spider parallel and ml spider picard to figure out what modules to load.
 
-```
+```bash
 #!/bin/bash
 #SBATCH --export=NONE
 #SBATCH --job-name=sortbam
@@ -253,4 +254,42 @@ parallel -j 90 --memfree 20G  'java -jar $EBROOTPICARD/picard.jar AddOrReplaceRe
 parallel -j 90 --memfree 20G 'java -jar $EBROOTPICARD/picard.jar SortSam I={} O={.}.sorted.bam TMP_DIR=./tmp SORT_ORDER=coordinate CREATE_INDEX=true' ::: *groups.bam
 rm *groups.bam
 
+```
+## STACKS <a name="STACKS"></a>
+Now we are ready to run STACKS
+
+We need to first make a file that has all the individuals in the file so that the program knows what files to expect and what population each individual belongs to. For our purpose, we will just count everything as one population. 
+
+In R, navigate to the folder where your sorted.bam files are. and setwd() there.
+
+
+```R
+setwd("wherever your sorted bam files are")
+sorted_bam = list.files(pattern="sorted.bam")
+files_and_pop = data.frame(files=sorted_bam,pop="pop1")
+files_and_pop$files = gsub(".sorted.bam",".sorted",files_and_pop$files )
+
+
+write.table(files_and_pop,row.names = F,col.names = F, quote = F, file = "pop_map.tsv")
+```
+
+Now ready to submit a job that runs stacks. There are two commands to execute(gstacks and populations). -I argument is the the folder where all the .sorted.bam files are, -M is the pop_map.tsv file we created in R. and -O is the output folder (create one that is called gstacks or something to hold the intermediate files between the two commands)
+
+```bash
+#!/bin/bash
+#SBATCH --export=NONE
+#SBATCH --job-name=gatk_parents
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=32
+#SBATCH --mem=100G
+#SBATCH --time=24:00:00
+#SBATCH --mail-type=ALL
+
+ml GCC/11.3.0  OpenMPI/4.1.4 Stacks/2.62
+
+gstacks -I /scratch/user/jzl0026/SWxBExMG/sorted_bam -M /scratch/user/jzl0026/SWxBExMG/sorted_bam/pop_map.tsv  -O /scratch/user/jzl0026/SWxBExMG/gstacks -t 32
+
+populations -P /scratch/user/jzl0026/SWxBExMG/gstacks -O /scratch/user/jzl0026/SWxBExMG/stacks_population -t 32 --vcf
+
+echo "done gstacks and populations"
 ```
