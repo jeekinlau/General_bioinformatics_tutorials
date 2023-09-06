@@ -232,4 +232,25 @@ done
 
 ```
 
+After the reads are aligned, we need to sort the reads in the bam files. This sbatch below is for grace hprc cluster. For other clusters use ml spider parallel and ml spider picard to figure out what modules to load.
 
+```
+#!/bin/bash
+#SBATCH --export=NONE
+#SBATCH --job-name=sortbam
+#SBATCH --nodes=20
+#SBATCH --ntasks-per-node=5
+#SBATCH --mem=100G
+#SBATCH --time=24:00:00
+#SBATCH --mail-type=ALL
+
+ml GCCcore/11.2.0 parallel/20210722 picard/2.25.1-Java-11
+
+cd /scratch/user/jzl0026/SWxBExMG/bam
+
+parallel -j 90 --memfree 20G  'java -jar $EBROOTPICARD/picard.jar AddOrReplaceReadGroups -I {} -O {.}.groups.bam -RGID {} -RGLB NlaIII -RGPL ILLUMINA -RGPU unit1 -RGSM {}' ::: *.bam
+#rm *seqs.bam
+parallel -j 90 --memfree 20G 'java -jar $EBROOTPICARD/picard.jar SortSam I={} O={.}.sorted.bam TMP_DIR=./tmp SORT_ORDER=coordinate CREATE_INDEX=true' ::: *groups.bam
+rm *groups.bam
+
+```
