@@ -238,10 +238,10 @@ After the reads are aligned, we need to sort the reads in the bam files. This sb
 ```bash
 #!/bin/bash
 #SBATCH --export=NONE
-#SBATCH --job-name=sortbam
-#SBATCH --nodes=20
-#SBATCH --ntasks-per-node=5
-#SBATCH --mem=100G
+#SBATCH --job-name=sortsam
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=64
+#SBATCH --mem=250G
 #SBATCH --time=24:00:00
 #SBATCH --mail-type=ALL
 
@@ -249,10 +249,16 @@ ml GCCcore/11.2.0 parallel/20210722 picard/2.25.1-Java-11
 
 cd /scratch/user/jzl0026/SWxBExMG/bam
 
-parallel -j 90 --memfree 20G  'java -jar $EBROOTPICARD/picard.jar AddOrReplaceReadGroups -I {} -O {.}.groups.bam -RGID {} -RGLB NlaIII -RGPL ILLUMINA -RGPU unit1 -RGSM {}' ::: *.bam
-#rm *seqs.bam
-parallel -j 90 --memfree 20G 'java -jar $EBROOTPICARD/picard.jar SortSam I={} O={.}.sorted.bam TMP_DIR=./tmp SORT_ORDER=coordinate CREATE_INDEX=true' ::: *groups.bam
-rm *groups.bam
+sortsam_function(){
+java  -jar $EBROOTPICARD/picard.jar AddOrReplaceReadGroups -I $1 -O /scratch/user/jzl0026/fse/sorted_bam/$1.groups.b -RGPL ILLUMINA -RGPU unit1 -RGSM $1
+java -jar $EBROOTPICARD/picard.jar SortSam I=/scratch/user/jzl0026/fse/sorted_bam/$1.groups.bam O=/scratch/user/jzl0rted.bam TMP_DIR=./tmp SORT_ORDER=coordinate CREATE_INDEX=true
+
+rm /scratch/user/jzl0026/fse/sorted_bam/$1.groups.bam
+}
+export -f sortsam_function
+
+parallel -j 60 sortsam_function {} {.} ::: *gz.bam
+
 
 ```
 ## STACKS <a name="STACKS"></a>
