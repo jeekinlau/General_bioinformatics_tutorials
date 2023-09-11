@@ -254,14 +254,18 @@ ml GCCcore/11.2.0 parallel/20210722 picard/2.25.1-Java-11
 cd /scratch/user/jzl0026/SWxBExMG/bam
 
 sortsam_function(){
-java  -jar $EBROOTPICARD/picard.jar AddOrReplaceReadGroups -I $1 -O /scratch/user/jzl0026/fse/sorted_bam/$1.groups.b -RGPL ILLUMINA -RGPU unit1 -RGSM $1
-java -jar $EBROOTPICARD/picard.jar SortSam I=/scratch/user/jzl0026/fse/sorted_bam/$1.groups.bam O=/scratch/user/jzl0rted.bam TMP_DIR=./tmp SORT_ORDER=coordinate CREATE_INDEX=true
+
+
+java  -jar $EBROOTPICARD/picard.jar AddOrReplaceReadGroups -I $1 -O /scratch/user/jzl0026/fse/sorted_bam/$1.groups.bam -RGID $1 -RGLB NlaIII -RGPL ILLUMINA -RGPU unit1 -RGSM $1
+java -jar $EBROOTPICARD/picard.jar SortSam I=/scratch/user/jzl0026/fse/sorted_bam/$1.groups.bam O=/scratch/user/jzl0026/fse/sorted_bam/$1.sorted.bam TMP_DIR=./tmp SORT_ORDER=coordinate CREATE_INDEX=true
 
 rm /scratch/user/jzl0026/fse/sorted_bam/$1.groups.bam
+
 }
 export -f sortsam_function
 
 parallel -j 60 sortsam_function {} {.} ::: *gz.bam
+
 
 
 ```
