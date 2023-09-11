@@ -235,6 +235,10 @@ done
 
 After the reads are aligned, we need to sort the reads in the bam files. This sbatch below is for grace hprc cluster. For other clusters use ml spider parallel and ml spider picard to figure out what modules to load.
 
+First cd to the directory where all the bam files are.
+Then we create a bash function which has the AddOrReplaceReadGroups and SortSam and remove intermediate file.
+then run this function in parallel
+
 ```bash
 #!/bin/bash
 #SBATCH --export=NONE
